@@ -4,13 +4,11 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-import static java.lang.Math.round;
-
 public class TextMessageAnalytics {
 
-    private static ArrayList<String> messages = new ArrayList<>();
-    private static ArrayList<Integer> timestamps = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static final ArrayList<String> messages = new ArrayList<>();
+    private static final ArrayList<Integer> timestamps = new ArrayList<>();
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         System.out.println("=== Text Message Analytics Tool ===");
@@ -67,7 +65,7 @@ public class TextMessageAnalytics {
             }
         } while (!messageNumberIsValid);
 
-        String message = "";
+        String message;
         for (int i = 0; i < numMessages; i++) {
             System.out.print("Message " + (i + 1) + ": ");
             message = scanner.nextLine().trim();
@@ -123,11 +121,11 @@ public class TextMessageAnalytics {
             totalWords += countWords(message);
         }
 
-        return Math.round(totalWords / messages.size());
+        return totalWords / messages.size();
     }
 
     public static int countWords(String message) {
-        if (message == null || message.trim().equals("")) {
+        if (message == null || message.trim().isEmpty()) {
             return 0;
         }
 
