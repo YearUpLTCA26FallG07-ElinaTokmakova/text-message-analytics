@@ -1,5 +1,6 @@
 package com.pluralsight;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -52,21 +53,38 @@ public class TextMessageAnalytics {
     }
 
     public static void addMessages() {
-        System.out.print("How many messages to add? ");
-        int numMessages = scanner.nextInt();
-        scanner.nextLine(); // consume newline
+        boolean messageNumberIsValid = false;
+        int numMessages = 0;
+        do {
+            try {
+                System.out.print("How many messages to add? ");
+                numMessages = scanner.nextInt();
+                scanner.nextLine(); // consume new line
+                messageNumberIsValid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("\nInvalid input. Please enter a valid whole number.");
+                scanner.nextLine(); // consume new line
+            }
+        } while (!messageNumberIsValid);
 
+        String message = "";
         for (int i = 0; i < numMessages; i++) {
             System.out.print("Message " + (i + 1) + ": ");
-            String message = scanner.nextLine().trim();
+            message = scanner.nextLine().trim();
 
-            System.out.print("Timestamp (HHMM): ");
-            String timeInput = scanner.nextLine().trim();
-
-            int timestamp = Integer.parseInt(timeInput);
-
-            messages.add(message);
-            timestamps.add(timestamp);
+            boolean isValid = false;
+            do {
+                try {
+                    System.out.print("Timestamp (HHMM): ");
+                    String timeInput = scanner.nextLine().trim();
+                    int timestamp = Integer.parseInt(timeInput);
+                    isValid = true;
+                    messages.add(message);
+                    timestamps.add(timestamp);
+                } catch (NumberFormatException e) {
+                    System.out.println("\nInvalid input. Please enter a valid whole number.");
+                }
+            } while (!isValid);
         }
 
         System.out.println("Messages added successfully!");
@@ -80,7 +98,6 @@ public class TextMessageAnalytics {
 
         System.out.println("\n=== Message Analysis ===");
 
-        int messageCount = 1;
         for (int i = 0; i < messages.size(); i++) {
             String message = messages.get(i);
             int timestamp = timestamps.get(i);
@@ -92,12 +109,11 @@ public class TextMessageAnalytics {
             System.out.println("[" + formattedTime + "] \"" + message + "\" - " +
                     wordCount + " words, " + charCount + " chars");
 
-            messageCount += 2;
         }
     }
 
 
-    public static double calculateAverageWords() {
+    public static int calculateAverageWords() {
         if (messages.isEmpty()) {
             return 0;
         }
@@ -107,7 +123,7 @@ public class TextMessageAnalytics {
             totalWords += countWords(message);
         }
 
-        return Math.round(totalWords / (double) messages.size());
+        return Math.round(totalWords / messages.size());
     }
 
     public static int countWords(String message) {
@@ -128,7 +144,7 @@ public class TextMessageAnalytics {
         System.out.println("\n=== Message Analytics Report ===");
         System.out.println("Total Messages: " + messages.size());
 
-        double avgWords = calculateAverageWords();
+        int avgWords = calculateAverageWords();
         int totalChars = 0;
         for (String message : messages) {
             int messageChars = message.length();
@@ -168,13 +184,28 @@ public class TextMessageAnalytics {
             return 0;
         }
 
-        int maxTimestamp = timestamps.get(0);
-        for (int timestamp : timestamps) {
-            if (timestamp > maxTimestamp) {
-                maxTimestamp = timestamp;
+        int mostPopulated = timestamps.get(0);
+        int maxCount = 0;
+        ArrayList<Integer> hours = new ArrayList<>();//create new arraylist for hours
+
+        for (int timestamp : timestamps) { //each element in timestamps
+            int hourTimestamp = timestamp / 100; //converts to hours
+            hours.add(hourTimestamp); //add hour to arraylist
+        }
+        for (int i = 0; i < hours.size(); i++) { //check each element in hours
+            int counter = 0;
+            for (int a = i + 1; a < hours.size(); a++) { //compare it with all hours after current one
+                if (hours.get(i).equals(hours.get(a))) { //if current element matches any other elements
+                    counter++;
+                }
+
+                if (counter > maxCount) { // if current element in hours has more duplicates
+                    maxCount = counter;
+                    mostPopulated = hours.get(i); //it becomes the most populated hour
+                }
             }
         }
-        return maxTimestamp / 100;  // Extract hour from HHMM format
+        return mostPopulated / 100;
     }
 
     public static String formatTime(int timestamp) {
