@@ -187,7 +187,7 @@ public class TextMessageAnalytics {
         ArrayList<Integer> hours = new ArrayList<>();//create new arraylist for hours
 
         for (int timestamp : timestamps) { //each element in timestamps
-            int hourTimestamp = timestamp / 100; //converts to hours
+            int hourTimestamp = timestamp / 100;
             hours.add(hourTimestamp); //add hour to arraylist
         }
         for (int i = 0; i < hours.size(); i++) { //check each element in hours
@@ -203,7 +203,7 @@ public class TextMessageAnalytics {
                 }
             }
         }
-        return mostPopulated / 100;
+        return mostPopulated;
     }
 
     public static String formatTime(int timestamp) {
